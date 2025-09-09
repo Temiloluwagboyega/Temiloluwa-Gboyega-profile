@@ -346,29 +346,6 @@
     }; // end ssMoveTo
 
 
-   /* Download CV functionality
-    * ------------------------------------------------------ */
-    const ssDownloadCV = function() {
-        const downloadBtn = document.getElementById('download-cv');
-        
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Create a temporary link element
-                const link = document.createElement('a');
-                link.href = 'Temi\'s Resume.pdf';
-                link.download = 'Temi\'s Resume.pdf';
-                link.target = '_blank';
-                
-                // Append to body, click, and remove
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-        }
-    };
-
    /* Initialize
     * ------------------------------------------------------ */
     (function ssInit() {
@@ -381,7 +358,6 @@
         ssLightbox();
         ssAlertBoxes();
         ssMoveTo();
-        ssDownloadCV();
 
     })();
 
