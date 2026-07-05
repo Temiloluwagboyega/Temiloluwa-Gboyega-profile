@@ -1,0 +1,11 @@
+{
+    "name": "Temiloluwa Gboyega — Portfolio",
+    "short_name": "Temiloluwa",
+    "icons": [
+        { "src": "/images/profile.jpg", "sizes": "192x192", "type": "image/jpeg" },
+        { "src": "/images/profile.jpg", "sizes": "512x512", "type": "image/jpeg" }
+    ],
+    "theme_color": "#141516",
+    "background_color": "#141516",
+    "display": "standalone"
+}
