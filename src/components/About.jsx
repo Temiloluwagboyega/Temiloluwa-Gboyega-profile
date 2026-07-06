@@ -20,6 +20,7 @@ export default function About() {
             <p className="about-lead">
               I design and build responsive, user-focused web applications — with real attention to
               performance, accessibility and secure UI development.
+              
             </p>
           </Reveal>
           <Reveal delay={2}>

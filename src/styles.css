@@ -149,9 +149,7 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
         radial-gradient(65% 55% at 80% 30%, rgba(207, 168, 58, 0.10) 0%, rgba(207, 168, 58, 0) 60%),
         radial-gradient(60% 55% at 15% 80%, rgba(35, 150, 127, 0.10) 0%, rgba(35, 150, 127, 0) 60%);
 }
-/* fixed to the viewport so the scroll-morph (plane → tunnel flythrough)
-   stays on screen while the hero scrolls away; it fades out at the end */
-.hero-canvas { position: fixed !important; inset: 0; z-index: 0; pointer-events: none; }
+.hero-canvas { position: absolute !important; inset: 0; z-index: 1; pointer-events: none; }
 .hero::after {
     content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
     background:
@@ -294,6 +292,72 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
 }
 .card-link { position: absolute; inset: 0; z-index: 3; }
 .work-note { margin-top: 44px; font-size: 13px; color: var(--faint); text-align: center; letter-spacing: 0.04em; font-style: italic; }
+
+/* ================= PINNED SHOWCASE (desktop) ================= */
+.showcase { padding: 0; }
+.sc-stage { position: relative; height: 100vh; overflow: hidden; background: var(--bg); }
+.sc-head {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 6;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 30px clamp(28px, 5vw, 64px);
+}
+.sc-head .eyebrow { margin-bottom: 0; }
+.sc-count { font-size: 13px; font-weight: 600; letter-spacing: 0.24em; color: var(--faint); }
+.sc-count b { color: var(--gold); font-weight: 600; }
+
+.sc-panel {
+    position: absolute; inset: 0; z-index: 2;
+    display: grid; place-items: center;
+    padding: 100px clamp(28px, 5vw, 64px) 72px;
+    will-change: transform, opacity;
+}
+.sc-panel__inner {
+    width: 100%; max-width: 1120px;
+    display: grid; grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(32px, 5vw, 68px); align-items: center;
+}
+.sc-panel__media {
+    position: relative; aspect-ratio: 16 / 10; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--line-2);
+    box-shadow: 0 50px 90px -40px rgba(0, 0, 0, 0.85);
+}
+.sc-panel__media img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.sc-panel__media.ph {
+    display: grid; place-items: center;
+    background: radial-gradient(120% 120% at 25% 20%, #22302b 0%, #17191a 55%, #101112 100%);
+}
+.sc-panel__media.ph .grid-overlay {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(80% 80% at 50% 50%, #000 0%, transparent 75%);
+    opacity: 0.7;
+}
+.sc-panel__media.ph .mono { position: relative; font-family: var(--font-display); font-size: 5rem; color: var(--gold); }
+
+.sc-panel__cat {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 18px;
+}
+.sc-panel__title { font-size: clamp(2.4rem, 5vw, 4rem); line-height: 1.02; margin-bottom: 20px; }
+.sc-panel__desc { color: var(--text); font-size: 1.05rem; margin: 0 0 24px; max-width: 46ch; }
+.sc-panel__info .stack { margin-bottom: 30px; }
+.sc-panel__cta { margin-top: 4px; }
+.sc-panel__soon {
+    display: inline-flex; align-items: center; gap: 9px; margin-top: 4px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--teal-light); padding: 12px 20px;
+    border: 1px dashed rgba(45, 190, 161, 0.5); border-radius: var(--radius);
+}
+.sc-panel__soon::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--teal-light); box-shadow: 0 0 10px var(--teal-light); }
+
+.sc-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--line); z-index: 6; }
+.sc-progress i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--gold); }
+
+@media (max-width: 1040px) {
+    .sc-panel__inner { grid-template-columns: 1fr; gap: 30px; max-width: 620px; }
+    .sc-panel { align-items: start; overflow-y: auto; }
+}
 
 /* ================= CONTACT ================= */
 .contact-inner { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(36px, 6vw, 70px); align-items: center; }
