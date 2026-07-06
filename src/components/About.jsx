@@ -6,7 +6,7 @@ export default function About() {
     <section id="about" className="section section-line">
       <div className="wrap about-grid">
         <Reveal className="about-photo">
-          <img src="/images/profile.jpg" alt="Portrait of Temiloluwa Gboyega" width="700" height="800" />
+          <img src="/images/me.PNG" alt="Portrait of Temiloluwa Gboyega" width="500" height="500" />
           <div className="badge">
             <span className="dot"></span> Open to new opportunities
           </div>
