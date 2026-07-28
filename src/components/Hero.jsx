@@ -138,6 +138,7 @@ export default function Hero() {
   const reduced =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const small = typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches
 
   const heroRef = useRef(null)
   const stageRef = useRef(null)
@@ -195,7 +196,9 @@ export default function Hero() {
           <Canvas
             className="hero-canvas"
             camera={{ position: [0, 0, 14], fov: 60 }}
-            dpr={[1, 2]}
+            /* additive blending is fill-rate bound, so don't render a phone's
+               full 3x density for it */
+            dpr={[1, small ? 1.5 : 2]}
             gl={{ alpha: true, antialias: true }}
             frameloop={live ? 'always' : 'never'}
           >
@@ -205,7 +208,7 @@ export default function Hero() {
 
         <div className="hero-content" ref={contentRef}>
           <div className="wrap">
-            <div className="hero-eyebrow">Fullstack Software Engineer · Nigeria</div>
+            <div className="hero-eyebrow">Founder &amp; Fullstack Engineer · Nigeria</div>
             <h1>
               I&rsquo;m Temiloluwa Gboyega.
               <br />
@@ -214,9 +217,9 @@ export default function Hero() {
               web experiences.
             </h1>
             <p className="hero-sub">
-              Fullstack engineer with <b>2+ years</b> designing and shipping responsive, user-focused
-              web applications across <b>fintech, e-commerce and social platforms</b> — with React,
-              TypeScript, Django and Python.
+              Fullstack engineer with <b>4+ years</b> shipping responsive, user-focused web
+              applications across <b>fintech, e-commerce and social platforms</b>. Now building{' '}
+              <b>Abode</b> — trust infrastructure for Nigeria&rsquo;s domestic workforce.
             </p>
             <div className="hero-actions">
               <a href="#work" className="btn btn--primary">
@@ -235,16 +238,16 @@ export default function Hero() {
 
             <div className="hero-stats">
               <div className="stat">
-                <div className="num">2+</div>
+                <div className="num">4+</div>
                 <div className="lbl">Years building</div>
               </div>
               <div className="stat">
-                <div className="num">7+</div>
+                <div className="num">8</div>
                 <div className="lbl">Shipped projects</div>
               </div>
               <div className="stat">
-                <div className="num">3</div>
-                <div className="lbl">Domains: fintech · e-com · social</div>
+                <div className="num">1</div>
+                <div className="lbl">Company founded</div>
               </div>
             </div>
           </div>

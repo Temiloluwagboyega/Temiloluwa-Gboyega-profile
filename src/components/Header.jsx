@@ -4,6 +4,7 @@ const NAV = [
   { id: 'intro', label: 'Home' },
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },
+  { id: 'founding', label: 'Founding' },
   { id: 'work', label: 'Work' },
   { id: 'contact', label: 'Contact' },
 ]

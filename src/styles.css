@@ -5,7 +5,7 @@
  * Type: DM Serif Display (display) · Public Sans (body)
  * =================================================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap");
 
 /* ---- Tokens (from the original stylesheet) ---- */
 :root {
@@ -20,14 +20,18 @@
     --heading:   #ffffff;
     --faint:     #727373;   /* gray-6 */
 
+    /* One job each: gold is the site's accent, teal is live/build status,
+       coral belongs to Abode and is scoped to the founding section. */
     --gold:        #cfa83a;
     --gold-light:  #e3b64d;
     --gold-dark:   #b08a2a;
     --teal:        #23967f;
     --teal-light:  #2dbea1;
+    --coral:       #e0603c;
 
     --font-display: "DM Serif Display", serif;
     --font-body:    "Public Sans", sans-serif;
+    --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
     --maxw: 1180px;
     --radius: 4px;
@@ -55,6 +59,8 @@ body {
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 ::selection { background: rgba(207, 168, 58, 0.35); color: #fff; }
+/* the custom pointer hides the system cursor, so keyboard focus has to be loud */
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
 
 h1, h2, h3 { font-family: var(--font-display); font-weight: 400; color: var(--heading); line-height: 1.1; margin: 0; letter-spacing: 0; }
 h4 { font-family: var(--font-body); color: var(--heading); margin: 0; }
@@ -304,21 +310,137 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
 }
 .card:hover .card-arrow { background: var(--gold); color: #000; border-color: var(--gold); transform: rotate(-45deg); }
 .card-arrow svg { width: 16px; height: 16px; }
-.card-role {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--teal-light); margin-top: 10px;
-}
-.card-lead { color: var(--heading); font-size: 1.02rem; font-weight: 300; line-height: 1.5; margin: 10px 0 0; }
 .card-desc { color: var(--text); font-size: 0.95rem; margin: 12px 0 18px; flex: 1; }
 .stack { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .stack li {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    font-family: var(--font-mono);
+    font-size: 10.5px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase;
     color: var(--gold); padding: 4px 10px;
     border: 1px solid rgba(207, 168, 58, 0.3); border-radius: var(--radius);
     background: rgba(207, 168, 58, 0.05);
 }
 .card-link { position: absolute; inset: 0; z-index: 3; }
 .work-note { margin-top: 44px; font-size: 13px; color: var(--faint); text-align: center; letter-spacing: 0.04em; font-style: italic; }
+
+/* ================= FOUNDING (Abode) =================
+ * Structured as a record, not a card: labelled fields on hairline rules,
+ * because a verifiable record is the thing Abode actually builds. Coral is
+ * Abode's own accent and appears nowhere else on the site. */
+.founding-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 38px;
+}
+.founding-head .eyebrow { margin-bottom: 0; }
+.founding-flag {
+    font-family: var(--font-mono);
+    font-size: 10.5px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--coral); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 6px 14px; border-radius: 100px;
+    border: 1px solid rgba(224, 96, 60, 0.35); background: rgba(224, 96, 60, 0.08);
+}
+.founding-flag::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    background: var(--coral); box-shadow: 0 0 10px var(--coral);
+}
+
+.founding-title { font-size: clamp(3rem, 9vw, 6.5rem); line-height: 0.95; margin-bottom: 20px; }
+.founding-lead {
+    font-size: clamp(1.15rem, 2.4vw, 1.55rem); color: var(--heading); font-weight: 300;
+    line-height: 1.4; max-width: 30ch; margin: 0 0 clamp(36px, 5vw, 56px);
+}
+
+.founding-media { margin-bottom: clamp(36px, 5vw, 56px); }
+.founding-media a {
+    display: block; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--line-2);
+    box-shadow: 0 60px 100px -50px rgba(0, 0, 0, 0.9);
+    transition: transform .6s var(--ease), border-color .6s var(--ease);
+}
+.founding-media a:hover { transform: translateY(-4px); border-color: rgba(224, 96, 60, 0.5); }
+.founding-media img { width: 100%; height: auto; }
+
+.founding-grid {
+    display: grid; grid-template-columns: 0.62fr 1.38fr;
+    gap: clamp(32px, 5vw, 72px); margin-bottom: clamp(36px, 5vw, 52px);
+}
+.founding-record { margin: 0; }
+.founding-record .rec { padding: 13px 0; border-bottom: 1px solid var(--line); }
+.founding-record .rec:first-child { border-top: 1px solid var(--line); }
+.founding-record dt,
+.founding-stack dt,
+.prod-n {
+    font-family: var(--font-mono);
+    font-size: 10.5px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;
+}
+.founding-record dt, .founding-stack dt { color: var(--faint); }
+.founding-record dt { margin-bottom: 5px; }
+.founding-record dd { margin: 0; color: var(--heading); font-size: 0.97rem; line-height: 1.5; }
+
+.founding-thesis { color: var(--text); font-size: 1.08rem; margin: 0 0 clamp(28px, 4vw, 40px); max-width: 62ch; }
+.founding-products { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 44px); }
+.prod-n { color: var(--coral); display: block; margin-bottom: 10px; }
+.prod-name { font-size: 1.45rem; margin-bottom: 8px; }
+.prod-blurb { color: var(--text); font-size: 0.95rem; margin: 0; }
+/* the rule between the two products — "two products, one trust layer" */
+.founding-products .prod + .prod {
+    padding-left: clamp(24px, 4vw, 44px);
+    border-left: 1px solid rgba(224, 96, 60, 0.28);
+}
+
+.founding-foot {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 32px; flex-wrap: wrap;
+    padding-top: 30px; border-top: 1px solid var(--line);
+}
+.founding-stack { margin: 0; }
+.founding-stack dt { margin-bottom: 12px; }
+.founding-stack dd { margin: 0; }
+
+@media (max-width: 900px) {
+    .founding-grid, .founding-products { grid-template-columns: 1fr; }
+    .founding-products .prod + .prod {
+        padding-left: 0; border-left: 0;
+        padding-top: 24px; border-top: 1px solid rgba(224, 96, 60, 0.28);
+    }
+}
+@media (max-width: 560px) {
+    .founding-head { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .founding-foot { flex-direction: column; align-items: stretch; gap: 26px; }
+    .founding-foot .btn { justify-content: center; }
+    .founding-record dd { font-size: 0.95rem; }
+    .prod-name { font-size: 1.3rem; }
+}
+
+/* ================= CURSOR =================
+ * </> tracks the pointer 1:1; the ring eases along behind it and opens up over
+ * anything interactive. */
+.cursor-glyph, .cursor-ring {
+    position: fixed; top: 0; left: 0; z-index: 200;
+    pointer-events: none; opacity: 0; will-change: transform;
+}
+.cursor-glyph.is-on, .cursor-ring.is-on { opacity: 1; }
+.cursor-glyph {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 500; line-height: 1;
+    letter-spacing: -0.02em; color: var(--gold); white-space: nowrap;
+    /* keeps the glyph legible over light imagery, e.g. the Abode screenshot */
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.75);
+    transition: opacity .3s var(--ease), color .35s var(--ease);
+}
+.cursor-glyph.is-link { color: var(--gold-light); }
+.cursor-ring {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid rgba(207, 168, 58, 0.45);
+    transition: opacity .3s var(--ease), width .4s var(--ease), height .4s var(--ease),
+                background .4s var(--ease), border-color .4s var(--ease);
+}
+.cursor-ring.is-link {
+    width: 56px; height: 56px;
+    background: rgba(207, 168, 58, 0.1); border-color: rgba(207, 168, 58, 0.85);
+}
+/* Only hide the system cursor once ours is actually running. Blanket `*` so no
+   element's own `cursor: pointer` leaks a second cursor through. */
+body.has-cursor, body.has-cursor * { cursor: none; }
 
 /* ================= PINNED SHOWCASE (desktop) ================= */
 .showcase { padding: 0; }
@@ -329,7 +451,7 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
     padding: 30px clamp(28px, 5vw, 64px);
 }
 .sc-head .eyebrow { margin-bottom: 0; }
-.sc-count { font-size: 13px; font-weight: 600; letter-spacing: 0.24em; color: var(--faint); }
+.sc-count { font-family: var(--font-mono); font-size: 12px; font-weight: 400; letter-spacing: 0.18em; color: var(--faint); }
 .sc-count b { color: var(--gold); font-weight: 600; }
 
 .sc-panel {
@@ -367,19 +489,7 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
     color: var(--gold); margin-bottom: 18px;
 }
 .sc-panel__title { font-size: clamp(2.4rem, 5vw, 4rem); line-height: 1.02; margin-bottom: 20px; }
-/* founder/lead byline — teal to read as a different voice from the gold category */
-.sc-panel__role {
-    font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--teal-light); margin: -8px 0 16px;
-}
-.sc-panel__lead {
-    font-size: clamp(1.05rem, 1.5vw, 1.18rem); color: var(--heading); font-weight: 300;
-    line-height: 1.5; margin: 0 0 14px; max-width: 44ch;
-}
 .sc-panel__desc { color: var(--text); font-size: 1.05rem; margin: 0 0 24px; max-width: 46ch; }
-/* where a standfirst carries the headline, the body copy steps back and widens
-   so the taller info column still clears a laptop-height stage */
-.sc-panel__lead + .sc-panel__desc { font-size: 0.98rem; max-width: 54ch; }
 .sc-panel__info .stack { margin-bottom: 30px; }
 .sc-panel__cta { margin-top: 4px; }
 .sc-panel__soon {
@@ -402,7 +512,6 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
 @media (max-height: 820px) {
     .sc-panel { padding-top: 84px; padding-bottom: 56px; }
     .sc-panel__title { font-size: clamp(2.2rem, 4vw, 3.2rem); margin-bottom: 16px; }
-    .sc-panel__lead { margin-bottom: 12px; }
     .sc-panel__info .stack { margin-bottom: 22px; }
 }
 
@@ -456,7 +565,15 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
 @media (min-width: 760px) and (max-width: 900px) and (min-height: 700px) {
     .hero--motion { min-height: 160svh; }
 }
-@media (max-width: 760px) {
+/* six nav links + the résumé button need ~900px laid out flat, so tighten them
+   through the mid range before the drawer takes over */
+@media (min-width: 861px) and (max-width: 1060px) {
+    .nav-links { gap: 0; }
+    .nav-links a { padding: 8px 9px; letter-spacing: 0.1em; }
+    .nav-cta { margin-left: 8px; padding: 10px 15px !important; }
+}
+/* drawer breakpoint matches the one Work.jsx uses to drop the pinned showcase */
+@media (max-width: 860px) {
     .nav-links {
         position: fixed; inset: 0; z-index: 55;
         flex-direction: column; justify-content: center; gap: 10px;
@@ -468,6 +585,8 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
     .nav-links .nav-cta { margin-left: 0; margin-top: 12px; }
     .nav-toggle { display: block; position: relative; z-index: 60; }
     body.menu-open { overflow: hidden; }
+}
+@media (max-width: 760px) {
     .scroll-hint { display: none; }
     .hero-stats { gap: 30px; }
 }

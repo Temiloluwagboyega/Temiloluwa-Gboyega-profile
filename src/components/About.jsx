@@ -8,7 +8,7 @@ export default function About() {
         <Reveal className="about-photo">
           <img src="/images/me.PNG" alt="Portrait of Temiloluwa Gboyega" width="500" height="500" />
           <div className="badge">
-            <span className="dot"></span> Open to new opportunities
+            <span className="dot"></span> Founder &amp; builder
           </div>
         </Reveal>
         <div>
