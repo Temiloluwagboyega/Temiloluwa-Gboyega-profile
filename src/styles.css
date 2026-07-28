@@ -141,22 +141,44 @@ body.menu-open .nav-toggle span:nth-child(2) { opacity: 0; }
 body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* ================= HERO ================= */
-.hero { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: hidden; background: var(--bg-2); }
+.hero { position: relative; background: var(--bg-2); }
+/* Base = the plain, static hero. It grows with its copy so nothing is ever
+   clipped; the pinned flythrough is layered on only where there's room for it
+   (see the min-width/min-height query below). */
+.hero-stage { position: relative; overflow: hidden; }
 /* warm glow fallback + atmosphere behind the canvas */
-.hero::before {
+.hero-stage::before {
     content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
     background:
         radial-gradient(65% 55% at 80% 30%, rgba(207, 168, 58, 0.10) 0%, rgba(207, 168, 58, 0) 60%),
         radial-gradient(60% 55% at 15% 80%, rgba(35, 150, 127, 0.10) 0%, rgba(35, 150, 127, 0) 60%);
 }
 .hero-canvas { position: absolute !important; inset: 0; z-index: 1; pointer-events: none; }
-.hero::after {
+.hero-stage::after {
     content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
     background:
         radial-gradient(130% 100% at 12% 34%, rgba(16,17,18,0.6) 0%, rgba(16,17,18,0.2) 42%, rgba(16,17,18,0) 68%),
         linear-gradient(180deg, rgba(16,17,18,0.2) 0%, rgba(16,17,18,0) 34%, rgba(16,17,18,0.8) 100%);
 }
+/* copy + corner UI: fades and lifts away as the tunnel takes over */
+.hero-content {
+    position: relative; z-index: 3;
+    min-height: 100svh;
+    display: flex; align-items: center;
+    will-change: opacity, transform;
+}
 .hero .wrap { position: relative; z-index: 3; width: 100%; padding-top: 100px; padding-bottom: 60px; }
+
+/* ---- the wormhole runway ----
+   Only on viewports tall and wide enough that the pinned stage can't clip the
+   copy. Hero.jsx derives its scroll progress from (hero height - stage height),
+   so where this query doesn't apply travel is 0 and the morph simply never
+   starts — the hero stays exactly as it is above. */
+@media (min-width: 760px) and (min-height: 700px) {
+    .hero--motion { min-height: 190svh; }
+    .hero--motion .hero-stage { position: sticky; top: 0; height: 100svh; }
+    .hero--motion .hero-content { position: absolute; inset: 0; min-height: 0; }
+}
 .hero-eyebrow {
     font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase;
     color: var(--gold); margin-bottom: 30px; display: flex; align-items: center; gap: 14px;
@@ -282,6 +304,11 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
 }
 .card:hover .card-arrow { background: var(--gold); color: #000; border-color: var(--gold); transform: rotate(-45deg); }
 .card-arrow svg { width: 16px; height: 16px; }
+.card-role {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal-light); margin-top: 10px;
+}
+.card-lead { color: var(--heading); font-size: 1.02rem; font-weight: 300; line-height: 1.5; margin: 10px 0 0; }
 .card-desc { color: var(--text); font-size: 0.95rem; margin: 12px 0 18px; flex: 1; }
 .stack { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .stack li {
@@ -340,7 +367,19 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
     color: var(--gold); margin-bottom: 18px;
 }
 .sc-panel__title { font-size: clamp(2.4rem, 5vw, 4rem); line-height: 1.02; margin-bottom: 20px; }
+/* founder/lead byline — teal to read as a different voice from the gold category */
+.sc-panel__role {
+    font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal-light); margin: -8px 0 16px;
+}
+.sc-panel__lead {
+    font-size: clamp(1.05rem, 1.5vw, 1.18rem); color: var(--heading); font-weight: 300;
+    line-height: 1.5; margin: 0 0 14px; max-width: 44ch;
+}
 .sc-panel__desc { color: var(--text); font-size: 1.05rem; margin: 0 0 24px; max-width: 46ch; }
+/* where a standfirst carries the headline, the body copy steps back and widens
+   so the taller info column still clears a laptop-height stage */
+.sc-panel__lead + .sc-panel__desc { font-size: 0.98rem; max-width: 54ch; }
 .sc-panel__info .stack { margin-bottom: 30px; }
 .sc-panel__cta { margin-top: 4px; }
 .sc-panel__soon {
@@ -357,6 +396,14 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
 @media (max-width: 1040px) {
     .sc-panel__inner { grid-template-columns: 1fr; gap: 30px; max-width: 620px; }
     .sc-panel { align-items: start; overflow-y: auto; }
+}
+/* laptop-height stages: the panel is a fixed 100vh with overflow hidden, so
+   reclaim padding before the longest entry's copy runs past the bottom */
+@media (max-height: 820px) {
+    .sc-panel { padding-top: 84px; padding-bottom: 56px; }
+    .sc-panel__title { font-size: clamp(2.2rem, 4vw, 3.2rem); margin-bottom: 16px; }
+    .sc-panel__lead { margin-bottom: 12px; }
+    .sc-panel__info .stack { margin-bottom: 22px; }
 }
 
 /* ================= CONTACT ================= */
@@ -393,6 +440,9 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
 @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
     .scroll-hint svg { animation: none; }
+    /* no canvas, so no runway to scroll through */
+    .hero--motion { min-height: 100svh; }
+    .hero-content { opacity: 1 !important; transform: none !important; }
 }
 
 /* ================= RESPONSIVE ================= */
@@ -401,6 +451,10 @@ body.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotat
     .about-photo { max-width: 380px; }
     .work-grid { grid-template-columns: 1fr; }
     .hero-social { display: none; }
+}
+/* shorter runway on tablets — less dead scroll before About */
+@media (min-width: 760px) and (max-width: 900px) and (min-height: 700px) {
+    .hero--motion { min-height: 160svh; }
 }
 @media (max-width: 760px) {
     .nav-links {

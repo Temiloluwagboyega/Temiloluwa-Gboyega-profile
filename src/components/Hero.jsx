@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -12,11 +12,13 @@ const COUNT = COLS * ROWS
  * Idle: a gently waving plane that parallaxes toward the cursor.
  * On scroll: the plane morphs into a rotating tunnel and the camera
  * flies into it — a wormhole transition out of the hero.
+ *
+ * `scroll` is the hero's own sticky-travel progress (0 → 1), supplied by
+ * Hero so the whole morph completes while the stage is still pinned.
  */
-function ParticleField() {
+function ParticleField({ scroll }) {
   const pointsRef = useRef()
   const pointer = useRef({ x: 0, y: 0 })
-  const scroll = useRef(0)
   const { camera, gl } = useThree()
 
   const { positions, colors, seeds, grid } = useMemo(() => {
@@ -54,17 +56,8 @@ function ParticleField() {
       pointer.current.x = (e.clientX / window.innerWidth - 0.5) * 2
       pointer.current.y = (e.clientY / window.innerHeight - 0.5) * 2
     }
-    const onScroll = () => {
-      // 0 at top → 1 once you've scrolled ~85% of a viewport
-      scroll.current = Math.min(Math.max(window.scrollY / (window.innerHeight * 0.85), 0), 1)
-    }
-    onScroll()
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('scroll', onScroll)
-    }
+    return () => window.removeEventListener('pointermove', onMove)
   }, [])
 
   const smooth = useRef({ x: 0, y: 0, p: 0 })
@@ -77,7 +70,7 @@ function ParticleField() {
     const s = smooth.current
     s.x += (pointer.current.x - s.x) * 0.05
     s.y += (pointer.current.y - s.y) * 0.05
-    s.p += (scroll.current - s.p) * 0.07
+    s.p += (scroll.current - s.p) * 0.12
     const e = s.p * s.p * (3 - 2 * s.p) // smoothstep ease of scroll progress
 
     const pos = points.geometry.attributes.position
@@ -116,8 +109,10 @@ function ParticleField() {
     camera.position.z = 14 - e * 12.5 // fly into the tunnel mouth
     camera.lookAt(0, 0, e * -20) // look down the tunnel as it forms
 
-    // fade the whole canvas out at the end of the flythrough
-    const fade = Math.min(Math.max((s.p - 0.78) / 0.22, 0), 1)
+    // Fade out over the last stretch of the runway, keyed to the raw scroll
+    // value rather than the eased one so it always reaches 0 by the time the
+    // stage unpins and the next section takes over.
+    const fade = Math.min(Math.max((scroll.current - 0.82) / 0.18, 0), 1)
     gl.domElement.style.opacity = String(1 - fade)
   })
 
@@ -144,78 +139,132 @@ export default function Hero() {
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+  const heroRef = useRef(null)
+  const stageRef = useRef(null)
+  const contentRef = useRef(null)
+  const progress = useRef(0)
+  // pause the render loop once the stage has scrolled out of view
+  const [live, setLive] = useState(true)
+
+  useEffect(() => {
+    if (reduced) return
+
+    const onScroll = () => {
+      const hero = heroRef.current
+      const stage = stageRef.current
+      if (!hero || !stage) return
+
+      // How far the sticky stage can travel inside the hero. Derived from the
+      // real box heights so it stays correct whatever the CSS runway is.
+      const travel = hero.offsetHeight - stage.offsetHeight
+      const p = travel > 0 ? Math.min(Math.max(-hero.getBoundingClientRect().top / travel, 0), 1) : 0
+      progress.current = p
+
+      // Copy clears out early so the tunnel has the frame to itself.
+      const content = contentRef.current
+      if (content) {
+        const f = Math.min(p / 0.42, 1)
+        content.style.opacity = String(1 - f)
+        content.style.transform = `translate3d(0, ${-f * 70}px, 0)`
+        // don't let invisible copy swallow clicks over the tunnel
+        content.style.pointerEvents = f > 0.85 ? 'none' : ''
+      }
+    }
+
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+
+    const io = new IntersectionObserver(
+      ([entry]) => setLive(entry.isIntersecting),
+      { rootMargin: '10% 0px' }
+    )
+    io.observe(stageRef.current)
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      io.disconnect()
+    }
+  }, [reduced])
+
   return (
-    <section id="intro" className="hero">
-      {!reduced && (
-        <Canvas
-          className="hero-canvas"
-          camera={{ position: [0, 0, 14], fov: 60 }}
-          dpr={[1, 2]}
-          gl={{ alpha: true, antialias: true }}
-        >
-          <ParticleField />
-        </Canvas>
-      )}
+    <section id="intro" className={reduced ? 'hero' : 'hero hero--motion'} ref={heroRef}>
+      <div className="hero-stage" ref={stageRef}>
+        {!reduced && (
+          <Canvas
+            className="hero-canvas"
+            camera={{ position: [0, 0, 14], fov: 60 }}
+            dpr={[1, 2]}
+            gl={{ alpha: true, antialias: true }}
+            frameloop={live ? 'always' : 'never'}
+          >
+            <ParticleField scroll={progress} />
+          </Canvas>
+        )}
 
-      <div className="wrap">
-        <div className="hero-eyebrow">Fullstack Software Engineer · Nigeria</div>
-        <h1>
-          I&rsquo;m Temiloluwa Gboyega.
-          <br />
-          I build <em>secure, fast</em>
-          <br />
-          web experiences.
-        </h1>
-        <p className="hero-sub">
-          Fullstack engineer with <b>2+ years</b> designing and shipping responsive, user-focused web
-          applications across <b>fintech, e-commerce and social platforms</b> — with React, TypeScript,
-          Django and Python.
-        </p>
-        <div className="hero-actions">
-          <a href="#work" className="btn btn--primary">
-            View my work
+        <div className="hero-content" ref={contentRef}>
+          <div className="wrap">
+            <div className="hero-eyebrow">Fullstack Software Engineer · Nigeria</div>
+            <h1>
+              I&rsquo;m Temiloluwa Gboyega.
+              <br />
+              I build <em>secure, fast</em>
+              <br />
+              web experiences.
+            </h1>
+            <p className="hero-sub">
+              Fullstack engineer with <b>2+ years</b> designing and shipping responsive, user-focused
+              web applications across <b>fintech, e-commerce and social platforms</b> — with React,
+              TypeScript, Django and Python.
+            </p>
+            <div className="hero-actions">
+              <a href="#work" className="btn btn--primary">
+                View my work
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </a>
+              <a href="/Temiloluwa_Gboyega_Resume.pdf" className="btn" download>
+                Download résumé
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 3v13M7 12l5 5 5-5M5 21h14" />
+                </svg>
+              </a>
+            </div>
+
+            <div className="hero-stats">
+              <div className="stat">
+                <div className="num">2+</div>
+                <div className="lbl">Years building</div>
+              </div>
+              <div className="stat">
+                <div className="num">7+</div>
+                <div className="lbl">Shipped projects</div>
+              </div>
+              <div className="stat">
+                <div className="num">3</div>
+                <div className="lbl">Domains: fintech · e-com · social</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="hero-social">
+            <a href="https://www.linkedin.com/in/temiloluwa-gboyega-5212632b1/" target="_blank" rel="noopener noreferrer">
+              LinkedIn
+            </a>
+            <a href="https://github.com/Temiloluwagboyega" target="_blank" rel="noopener noreferrer">
+              GitHub
+            </a>
+          </div>
+          <a href="#about" className="scroll-hint">
+            Scroll
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </a>
-          <a href="/Temiloluwa_Gboyega_Resume.pdf" className="btn" download>
-            Download résumé
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 3v13M7 12l5 5 5-5M5 21h14" />
+              <path d="M12 5v14M6 13l6 6 6-6" />
             </svg>
           </a>
         </div>
-
-        <div className="hero-stats">
-          <div className="stat">
-            <div className="num">2+</div>
-            <div className="lbl">Years building</div>
-          </div>
-          <div className="stat">
-            <div className="num">7+</div>
-            <div className="lbl">Shipped projects</div>
-          </div>
-          <div className="stat">
-            <div className="num">3</div>
-            <div className="lbl">Domains: fintech · e-com · social</div>
-          </div>
-        </div>
       </div>
-
-      <div className="hero-social">
-        <a href="https://www.linkedin.com/in/temiloluwa-gboyega-5212632b1/" target="_blank" rel="noopener noreferrer">
-          LinkedIn
-        </a>
-        <a href="https://github.com/Temiloluwagboyega" target="_blank" rel="noopener noreferrer">
-          GitHub
-        </a>
-      </div>
-      <a href="#about" className="scroll-hint">
-        Scroll
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 5v14M6 13l6 6 6-6" />
-        </svg>
-      </a>
     </section>
   )
 }

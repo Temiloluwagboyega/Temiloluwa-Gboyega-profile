@@ -37,6 +37,8 @@ function PanelInfo({ project }) {
     <div className="sc-panel__info">
       <div className="sc-panel__cat">{project.category}</div>
       <h3 className="sc-panel__title">{project.title}</h3>
+      {project.role && <div className="sc-panel__role">{project.role}</div>}
+      {project.lead && <p className="sc-panel__lead">{project.lead}</p>}
       <p className="sc-panel__desc">{project.description}</p>
       <ul className="stack">
         {project.stack.map((tech) => (
@@ -172,6 +174,8 @@ function CardGrid() {
                       </span>
                     )}
                   </div>
+                  {project.role && <div className="card-role">{project.role}</div>}
+                  {project.lead && <p className="card-lead">{project.lead}</p>}
                   <p className="card-desc">{project.description}</p>
                   <ul className="stack">
                     {project.stack.map((tech) => (

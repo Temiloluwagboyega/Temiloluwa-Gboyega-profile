@@ -1,4 +1,20 @@
+/**
+ * `role` and `lead` are optional — set them on work you founded or led, and
+ * they render as an extra byline + standfirst above the description.
+ */
 export const projects = [
+  {
+    title: 'Abode',
+    url: 'https://getabode.vercel.app/',
+    image: '/images/portfolio/abode.png',
+    alt: 'Abode — trust infrastructure platform for Nigerian homes, workers and recruitment agencies',
+    category: 'Platform · Marketplace & SaaS',
+    role: 'Founder & Product Engineer · 2026 – Present',
+    lead: 'Building the trust infrastructure for Nigerian homes, workers, and recruitment agencies.',
+    description:
+      'A trust-first platform connecting homeowners, domestic workers and recruitment agencies through verified identity, portable employment records and reputation — plus AgencyOS, a SaaS layer for digital workforce management. I lead design and engineering across web and mobile, alongside product strategy and architecture.',
+    stack: ['React', 'React Native', 'Next.js', 'TypeScript', 'Django', 'PostgreSQL', 'Tailwind CSS'],
+  },
   {
     title: 'Veradoc',
     url: 'https://veradoc.vercel.app/',

@@ -22,13 +22,16 @@ export default function Header() {
 
   useEffect(() => {
     const sections = NAV.map(({ id }) => document.getElementById(id)).filter(Boolean)
+    // Marks whichever section straddles the middle of the viewport. Height
+    // independent, so the tall scroll-runway hero can't fall out of range the
+    // way a ratio threshold would.
     const spy = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) setActive(entry.target.id)
         })
       },
-      { threshold: 0.5 }
+      { rootMargin: '-45% 0px -55% 0px', threshold: 0 }
     )
     sections.forEach((s) => spy.observe(s))
     return () => spy.disconnect()
