@@ -217,7 +217,7 @@ export default function Hero() {
               web experiences.
             </h1>
             <p className="hero-sub">
-              Fullstack engineer with <b>4+ years</b> shipping responsive, user-focused web
+              Fullstack engineer with <b>3 years</b> shipping responsive, user-focused web
               applications across <b>fintech, e-commerce and social platforms</b>. Now building{' '}
               <b>Abode</b> — trust infrastructure for Nigeria&rsquo;s domestic workforce.
             </p>
